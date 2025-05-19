@@ -1,5 +1,6 @@
-import { getRouteApi, useLocation } from "@tanstack/react-router";
+import { getRouteApi, Link, useLocation } from "@tanstack/react-router";
 import clsx from "clsx";
+import { Search, UserPlus } from "lucide-react";
 
 const routeApi = getRouteApi("/_app");
 
@@ -13,20 +14,26 @@ export function SearchContacts() {
   };
 
   return (
-    <div>
-      <input
-        aria-label="Search contacts"
-        id="search-contacts-q"
-        name="q"
-        className={clsx({ loading: isFetching })}
-        defaultValue={q ?? ""}
-        onChange={(e) => handleChange(e.target.value)}
-        placeholder="Search"
-        type="search"
-      />
-      <div aria-hidden hidden={!isFetching} id="search-spinner" />
+    <div className="flex justify-between px-2">
+      <label className={clsx("input", { loading: isFetching })}>
+        <Search />
+        <input
+          aria-label="Search contacts"
+          id="search-contacts-q"
+          name="q"
+          defaultValue={q ?? ""}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder="Search"
+          type="search"
+        />
+        <div aria-hidden hidden={!isFetching} id="search-spinner" />
+      </label>
 
-      <button type="submit">New</button>
+      <Link to="/contacts/new">
+        <button className="btn btn-primary">
+          <UserPlus size={16} /> New
+        </button>
+      </Link>
     </div>
   );
 }

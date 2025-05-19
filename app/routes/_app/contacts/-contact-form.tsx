@@ -1,8 +1,8 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ContactRecord } from "~/db/db";
 
 export function ContactForm({ contact }: { contact: ContactRecord }) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <form key={contact.id} id="contact-form" method="post">
@@ -68,7 +68,7 @@ export function ContactForm({ contact }: { contact: ContactRecord }) {
           <button className="btn btn-primary" type="submit">
             Save
           </button>
-          <button className="btn btn-warning" type="button" onClick={() => navigate({ to: ".." })}>
+          <button className="btn btn-warning" type="button" onClick={() => router.history.back()}>
             Cancel
           </button>
         </div>

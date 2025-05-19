@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import clsx from "clsx";
 import z from "zod";
@@ -29,12 +29,15 @@ function Sidebar() {
 
   return (
     <div className="flex h-screen">
-      <aside id="sidebar">
-        <h1>
+      <aside id="sidebar" className="w-80 border-r border-r-base-300 bg-base-200 flex flex-col">
+        {/* <h1>
           <Link to="/about">React Router Contacts</Link>
-        </h1>
+        </h1> */}
         <SearchContacts />
-        <nav>{contacts.length ? <ContactsList contacts={contacts} /> : <>No Contacts</>}</nav>
+        <nav className="px-4">
+          {contacts.length ? <ContactsList contacts={contacts} /> : <i>No Contacts</i>}
+        </nav>
+        <div className="h-1 bg-base-300"></div>
       </aside>
       <main id="detail" className={clsx({ loadingdetail: isPending })}>
         <Outlet />
