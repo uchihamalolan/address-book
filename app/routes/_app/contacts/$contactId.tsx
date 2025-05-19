@@ -1,19 +1,20 @@
-import { createFileRoute, Link, Outlet, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { ContactRecord, getContact } from "~/db/db";
-import { starContact } from "~/server/contacts";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { Pencil, Trash2 } from "lucide-react";
+
+import { ContactRecord } from "~/db/db";
+import { contactQueryOptions, starMutationOptions, trashMutationOptions } from "~/server/contacts";
 
 export const Route = createFileRoute("/_app/contacts/$contactId")({
   component: Contact,
-  loader: async ({ params: { contactId } }) => {
-    const contact = await getContact(contactId);
-    if (!contact) throw new Error("no contact found");
-    return contact;
+  loader: async ({ params: { contactId }, context: { queryClient } }) => {
+    return await queryClient.ensureQueryData(contactQueryOptions(contactId));
   },
 });
 
 function Contact() {
-  const contact = Route.useLoaderData();
+  const { contactId } = Route.useParams();
+  const { data: contact } = useSuspenseQuery(contactQueryOptions(contactId));
 
   const contactName =
     contact.first || contact.last ? `${contact.first} ${contact.last}` : <i>No Name</i>;
@@ -41,11 +42,11 @@ function Contact() {
 
           <div className="flex items-center gap-4">
             <Link to={"/contacts/$contactId/edit"} params={{ contactId: contact.id }}>
-              <button className="btn btn-primary">Edit</button>
+              <button className="btn btn-primary" aria-label="Edit Contact">
+                <Pencil />
+              </button>
             </Link>
-            <Link to={"/about"}>
-              <button className="btn btn-neutral">Delete</button>
-            </Link>
+            <DeleteContact contactId={contact.id} />
           </div>
         </div>
       </div>
@@ -56,23 +57,44 @@ function Contact() {
   );
 }
 
-function Favorite({ contact }: { contact: ContactRecord }) {
-  const favorite = contact.favorite;
-  const favContact = useServerFn(starContact);
-  const router = useRouter();
+function DeleteContact({ contactId }: { contactId: string }) {
+  const { mutate } = useMutation(trashMutationOptions(contactId));
+  const navigate = useNavigate();
+
+  const handleDelete = () => {
+    const response = confirm("Do you really want to delete this contact?");
+    if (!response) return;
+
+    mutate();
+    navigate({ to: "/" });
+  };
 
   return (
     <button
-      className="btn btn-outline btn-circle"
-      aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-      name="favorite"
-      value={favorite ? "false" : "true"}
-      onClick={async () => {
-        await favContact({ data: { contactId: contact.id, favorite: !favorite } });
-        await router.invalidate({ sync: true });
-      }}
+      className="btn btn-outline btn-error"
+      aria-label="Delete Contact"
+      onClick={handleDelete}
     >
-      {favorite ? "★" : "☆"}
+      <Trash2 />
+    </button>
+  );
+}
+
+function Favorite({ contact }: { contact: ContactRecord }) {
+  const { favorite, id } = contact;
+  const { mutate, variables } = useMutation(starMutationOptions(id));
+
+  const finalFav = variables?.favorite ?? favorite;
+
+  return (
+    <button
+      className={`btn btn-circle btn-primary text-xl ${!finalFav && "btn-outline"}`}
+      aria-label={finalFav ? "Remove from favorites" : "Add to favorites"}
+      name="favorite"
+      value={finalFav ? "false" : "true"}
+      onClick={() => mutate({ favorite: !favorite })}
+    >
+      {finalFav ? "★" : "☆"}
     </button>
   );
 }
