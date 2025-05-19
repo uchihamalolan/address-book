@@ -28,7 +28,7 @@ function Sidebar() {
   );
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       <aside id="sidebar">
         <h1>
           <Link to="/about">React Router Contacts</Link>
