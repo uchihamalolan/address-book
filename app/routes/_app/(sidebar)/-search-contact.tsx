@@ -14,7 +14,7 @@ export function SearchContacts() {
   };
 
   return (
-    <div className="flex justify-between px-2">
+    <div className="flex justify-between gap-2 px-2 py-4">
       <label className={clsx("input", { loading: isFetching })}>
         <Search />
         <input

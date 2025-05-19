@@ -3,7 +3,7 @@ import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
-import { deleteContact, getContact, updateContact } from "~/db/db";
+import { deleteContact, getContact, getContacts, updateContact } from "~/db/db";
 import { queryClient } from "~/router";
 
 const StarContactSchema = z.object({
@@ -52,6 +52,23 @@ export const contactQueryOptions = (contactId: string) =>
   queryOptions({
     queryKey: ["contact", contactId],
     queryFn: () => fetchContact({ data: contactId }),
+  });
+
+/* -------------------- FETCH CONTACTS -------------------- */
+const fetchContacts = createServerFn({ method: "GET" })
+  .validator((q?: string) => q)
+  .handler(async ({ data }) => {
+    const contacts = await getContacts(data);
+
+    if (!contacts.length) throw notFound();
+
+    return contacts;
+  });
+
+export const contactsQueryOptions = (q?: string) =>
+  queryOptions({
+    queryKey: ["contacts", q],
+    queryFn: () => fetchContacts({ data: q }),
   });
 
 /* -------------------- TRASH CONTACT -------------------- */

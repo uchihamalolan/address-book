@@ -43,7 +43,8 @@ function Contact() {
           <div className="flex items-center gap-4">
             <Link to={"/contacts/$contactId/edit"} params={{ contactId: contact.id }}>
               <button className="btn btn-primary" aria-label="Edit Contact">
-                <Pencil />
+                <Pencil size={16} />
+                Edit
               </button>
             </Link>
             <DeleteContact contactId={contact.id} />
@@ -75,7 +76,8 @@ function DeleteContact({ contactId }: { contactId: string }) {
       aria-label="Delete Contact"
       onClick={handleDelete}
     >
-      <Trash2 />
+      <Trash2 size={16} />
+      Delete
     </button>
   );
 }

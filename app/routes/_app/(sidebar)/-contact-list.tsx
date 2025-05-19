@@ -1,12 +1,12 @@
-import { getRouteApi, Link, useRouterState } from "@tanstack/react-router";
-import clsx from "clsx";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { Star } from "lucide-react";
 import { ContactRecord } from "~/db/db";
 
 const routeApi = getRouteApi("/_app");
 
 export function ContactsList({ contacts }: { contacts: ContactRecord[] }) {
   return (
-    <ul>
+    <ul className="flex flex-col gap-1.5">
       {contacts.map((contact) => (
         <li key={contact.id}>
           <ContactLink contact={contact} />
@@ -18,32 +18,29 @@ export function ContactsList({ contacts }: { contacts: ContactRecord[] }) {
 
 function ContactLink({ contact }: { contact: ContactRecord }) {
   const { q } = routeApi.useSearch();
-  const routerState = useRouterState();
+  const { favorite, first, last, id } = contact;
 
-  const isPending = routerState.pendingMatches?.some(
-    (match) =>
-      match.routeId === "/_app/contacts/$contactId" && match.params.contactId === contact.id
-  );
-  const isTransitioning = routerState.isTransitioning;
+  const contactName =
+    first || last ? (
+      <>
+        {first} {last}
+      </>
+    ) : (
+      <i>No Name</i>
+    );
 
   return (
     <Link
+      className="hover:bg-base-300 p-2 rounded-lg flex justify-between items-center ${clsx(ac)}"
       to={"/contacts/$contactId"}
-      params={{ contactId: contact.id }}
+      params={{ contactId: id }}
       search={{ q }}
-      className={clsx({
-        pending: isPending,
-        transitioning: isTransitioning,
-      })}
+      activeProps={{
+        className: "hover:bg-primary bg-primary text-primary-content",
+      }}
     >
-      {contact.first || contact.last ? (
-        <>
-          {contact.first} {contact.last}
-        </>
-      ) : (
-        <i>No Name</i>
-      )}
-      {contact.favorite ? <span>★</span> : null}
+      {contactName}
+      {favorite ? <Star fill="var(--color-amber-400)" /> : null}
     </Link>
   );
 }
