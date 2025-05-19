@@ -73,7 +73,6 @@ const fakeContacts = new FakeContacts(contacts);
 ////////////////////////////////////////////////////////////////////////////////
 // Handful of helper functions to be called from route loaders and actions
 export async function getContacts(query?: string | null) {
-  await sleep(500);
   let contacts = await fakeContacts.getAll();
 
   if (query) {
@@ -86,19 +85,15 @@ export async function getContacts(query?: string | null) {
 }
 
 export async function createEmptyContact() {
-  await sleep(500);
   const contact = await fakeContacts.create({});
   return contact;
 }
 
 export async function getContact(id: string) {
-  await sleep(500);
-
   return await fakeContacts.get(id);
 }
 
 export async function updateContact(id: string, updates: ContactMutation) {
-  await sleep(500);
   const contact = await fakeContacts.get(id);
   if (!contact) {
     throw new Error(`No contact found for ${id}`);
