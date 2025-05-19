@@ -11,60 +11,190 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as AboutImport } from './routes/about'
+import { Route as AppRouteImport } from './routes/_app/route'
+import { Route as AppIndexImport } from './routes/_app/index'
+import { Route as AppContactsNewImport } from './routes/_app/contacts/new'
+import { Route as AppContactsContactIdImport } from './routes/_app/contacts/$contactId'
+import { Route as AppContactsContactIdEditImport } from './routes/_app/contacts/$contactId.edit'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const AboutRoute = AboutImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppIndexRoute = AppIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppContactsNewRoute = AppContactsNewImport.update({
+  id: '/contacts/new',
+  path: '/contacts/new',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppContactsContactIdRoute = AppContactsContactIdImport.update({
+  id: '/contacts/$contactId',
+  path: '/contacts/$contactId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppContactsContactIdEditRoute = AppContactsContactIdEditImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppContactsContactIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AppIndexImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/contacts/$contactId': {
+      id: '/_app/contacts/$contactId'
+      path: '/contacts/$contactId'
+      fullPath: '/contacts/$contactId'
+      preLoaderRoute: typeof AppContactsContactIdImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/contacts/new': {
+      id: '/_app/contacts/new'
+      path: '/contacts/new'
+      fullPath: '/contacts/new'
+      preLoaderRoute: typeof AppContactsNewImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/contacts/$contactId/edit': {
+      id: '/_app/contacts/$contactId/edit'
+      path: '/edit'
+      fullPath: '/contacts/$contactId/edit'
+      preLoaderRoute: typeof AppContactsContactIdEditImport
+      parentRoute: typeof AppContactsContactIdImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AppContactsContactIdRouteChildren {
+  AppContactsContactIdEditRoute: typeof AppContactsContactIdEditRoute
+}
+
+const AppContactsContactIdRouteChildren: AppContactsContactIdRouteChildren = {
+  AppContactsContactIdEditRoute: AppContactsContactIdEditRoute,
+}
+
+const AppContactsContactIdRouteWithChildren =
+  AppContactsContactIdRoute._addFileChildren(AppContactsContactIdRouteChildren)
+
+interface AppRouteRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+  AppContactsContactIdRoute: typeof AppContactsContactIdRouteWithChildren
+  AppContactsNewRoute: typeof AppContactsNewRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+  AppContactsContactIdRoute: AppContactsContactIdRouteWithChildren,
+  AppContactsNewRoute: AppContactsNewRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/': typeof AppIndexRoute
+  '/contacts/$contactId': typeof AppContactsContactIdRouteWithChildren
+  '/contacts/new': typeof AppContactsNewRoute
+  '/contacts/$contactId/edit': typeof AppContactsContactIdEditRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/': typeof AppIndexRoute
+  '/contacts/$contactId': typeof AppContactsContactIdRouteWithChildren
+  '/contacts/new': typeof AppContactsNewRoute
+  '/contacts/$contactId/edit': typeof AppContactsContactIdEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/contacts/$contactId': typeof AppContactsContactIdRouteWithChildren
+  '/_app/contacts/new': typeof AppContactsNewRoute
+  '/_app/contacts/$contactId/edit': typeof AppContactsContactIdEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | ''
+    | '/about'
+    | '/'
+    | '/contacts/$contactId'
+    | '/contacts/new'
+    | '/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/about'
+    | '/'
+    | '/contacts/$contactId'
+    | '/contacts/new'
+    | '/contacts/$contactId/edit'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/about'
+    | '/_app/'
+    | '/_app/contacts/$contactId'
+    | '/_app/contacts/new'
+    | '/_app/contacts/$contactId/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +207,39 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/_app",
+        "/about"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_app": {
+      "filePath": "_app/route.tsx",
+      "children": [
+        "/_app/",
+        "/_app/contacts/$contactId",
+        "/_app/contacts/new"
+      ]
+    },
+    "/about": {
+      "filePath": "about.tsx"
+    },
+    "/_app/": {
+      "filePath": "_app/index.tsx",
+      "parent": "/_app"
+    },
+    "/_app/contacts/$contactId": {
+      "filePath": "_app/contacts/$contactId.tsx",
+      "parent": "/_app",
+      "children": [
+        "/_app/contacts/$contactId/edit"
+      ]
+    },
+    "/_app/contacts/new": {
+      "filePath": "_app/contacts/new.tsx",
+      "parent": "/_app"
+    },
+    "/_app/contacts/$contactId/edit": {
+      "filePath": "_app/contacts/$contactId.edit.tsx",
+      "parent": "/_app/contacts/$contactId"
     }
   }
 }

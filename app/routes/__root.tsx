@@ -1,5 +1,8 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+
+import mainCss from "~/main.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,14 +22,25 @@ export const Route = createRootRoute({
         title: "TanStack Start Starter",
       },
     ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: mainCss,
+      },
+    ],
   }),
   component: RootComponent,
+  notFoundComponent: () => <h1>Not Found (from Root)</h1>,
 });
+
+const queryClient = new QueryClient();
 
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
     </RootDocument>
   );
 }
