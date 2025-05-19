@@ -28,7 +28,7 @@ function Sidebar() {
   );
 
   return (
-    <>
+    <div className="flex">
       <aside id="sidebar">
         <h1>
           <Link to="/about">React Router Contacts</Link>
@@ -36,9 +36,9 @@ function Sidebar() {
         <SearchContacts />
         <nav>{contacts.length ? <ContactsList contacts={contacts} /> : <>No Contacts</>}</nav>
       </aside>
-      <main id="detail" className={clsx({ loading: isPending })}>
+      <main id="detail" className={clsx({ loadingdetail: isPending })}>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }

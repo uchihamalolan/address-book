@@ -19,39 +19,39 @@ function Contact() {
     contact.first || contact.last ? `${contact.first} ${contact.last}` : <i>No Name</i>;
 
   return (
-    <div id="contact">
-      <img
-        alt={`${contact.first} ${contact.last} avatar`}
-        key={contact.avatar}
-        src={contact.avatar}
-      />
+    <div id="contact" className="max-w-2xl">
+      <div className="contact-header flex gap-16">
+        <img
+          alt={`${contact.first} ${contact.last} avatar`}
+          key={contact.avatar}
+          src={contact.avatar}
+          className="object-cover aspect-square rounded-3xl w-48"
+        />
+        <div className="contact-info flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl">{contactName}</h1>
+            <Favorite contact={contact} />
+          </div>
 
-      <div>
-        <h1>
-          {contactName}
-          <Favorite contact={contact} />
-        </h1>
-
-        {contact.twitter ? (
-          <p>
+          {contact.twitter ? (
             <a href={`https://twitter.com/${contact.twitter}`}>{contact.twitter}</a>
-          </p>
-        ) : null}
+          ) : null}
 
-        {contact.notes ? <p>{contact.notes}</p> : null}
+          {contact.notes ? <p className="whitespace-break-spaces">{contact.notes}</p> : null}
 
-        <div>
-          <Link to={"/contacts/$contactId/edit"} params={{ contactId: contact.id }}>
-            <button>Edit</button>
-          </Link>
-          <Link to={"/about"}>
-            <button>Delete</button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to={"/contacts/$contactId/edit"} params={{ contactId: contact.id }}>
+              <button className="btn btn-primary">Edit</button>
+            </Link>
+            <Link to={"/about"}>
+              <button className="btn btn-neutral">Delete</button>
+            </Link>
+          </div>
         </div>
       </div>
-
-      {/* To Render edit form  */}
-      <Outlet />
+      <div className="contact-form mt-16">
+        <Outlet />
+      </div>
     </div>
   );
 }
@@ -63,6 +63,7 @@ function Favorite({ contact }: { contact: ContactRecord }) {
 
   return (
     <button
+      className="btn btn-outline btn-circle"
       aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
       name="favorite"
       value={favorite ? "false" : "true"}
