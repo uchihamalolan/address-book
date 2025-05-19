@@ -3,5 +3,8 @@ node_modules
 .output
 .vercel
 .vinxi
+.netlify
+
+dist
 
 .env

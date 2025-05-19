@@ -6,7 +6,7 @@ import mainCss from "~/main.css?url";
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
