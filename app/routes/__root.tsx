@@ -4,6 +4,32 @@ import type { ReactNode } from "react";
 
 import mainCss from "~/main.css?url";
 
+function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+const queryClient = new QueryClient();
+
+function RootComponent() {
+  return (
+    <RootDocument>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </RootDocument>
+  );
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -32,29 +58,3 @@ export const Route = createRootRoute({
   component: RootComponent,
   notFoundComponent: () => <h1>Not Found (from Root)</h1>,
 });
-
-const queryClient = new QueryClient();
-
-function RootComponent() {
-  return (
-    <RootDocument>
-      <QueryClientProvider client={queryClient}>
-        <Outlet />
-      </QueryClientProvider>
-    </RootDocument>
-  );
-}
-
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  return (
-    <html>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}

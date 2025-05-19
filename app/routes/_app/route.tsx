@@ -1,21 +1,21 @@
-import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
-
-import clsx from "clsx";
-
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
+import clsx from "clsx";
 import z from "zod";
 
 import { getContacts } from "~/db/db";
-import { ContactsList, Header, SearchContacts } from "./(sidebar)/-components";
+import { ContactNotFound } from "./(sidebar)/-components";
+import { ContactsList } from "./(sidebar)/-contact-list";
+import { SearchContacts } from "./(sidebar)/-search-contact";
+
+const ContactSchema = z.object({
+  q: z.string().default(""),
+});
 
 export const Route = createFileRoute("/_app")({
   component: Sidebar,
-  notFoundComponent: NoContacts,
-  validateSearch: zodValidator(
-    z.object({
-      q: z.string().default(""),
-    })
-  ),
+  notFoundComponent: ContactNotFound,
+  validateSearch: zodValidator(ContactSchema),
   loaderDeps: ({ search: { q } }) => ({ q }),
   loader: ({ deps: { q } }) => getContacts(q),
 });
@@ -29,22 +29,16 @@ function Sidebar() {
 
   return (
     <>
-      <div id="sidebar">
-        <Header />
+      <aside id="sidebar">
+        <h1>
+          <Link to="/about">React Router Contacts</Link>
+        </h1>
         <SearchContacts />
-        <nav>{contacts.length ? <ContactsList contacts={contacts} /> : <NoContacts />}</nav>
-      </div>
-      <div id="detail" className={clsx({ loading: isPending })}>
+        <nav>{contacts.length ? <ContactsList contacts={contacts} /> : <>No Contacts</>}</nav>
+      </aside>
+      <main id="detail" className={clsx({ loading: isPending })}>
         <Outlet />
-      </div>
+      </main>
     </>
-  );
-}
-
-function NoContacts() {
-  return (
-    <p>
-      <i>No contacts</i>
-    </p>
   );
 }

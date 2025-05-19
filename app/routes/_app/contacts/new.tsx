@@ -1,9 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createEmptyContact } from "~/db/db";
+import { ContactForm } from "./-contact-form";
 
 export const Route = createFileRoute("/_app/contacts/new")({
-  component: RouteComponent,
+  component: NewContact,
+  loader: async () => createEmptyContact(),
 });
 
-function RouteComponent() {
-  return <div>Hello "/_app/contacts/new"!</div>;
+function NewContact() {
+  const contact = Route.useLoaderData();
+
+  return <ContactForm contact={contact} />;
 }
